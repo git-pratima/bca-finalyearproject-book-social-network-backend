@@ -33,7 +33,7 @@ import io.swagger.v3.oas.annotations.servers.Server;
                 ),
                 @Server(
                         description = "PROD ENV",
-                        url = "http://localhost:8088"
+                        url = "https://bca-finalyearproject-book-social-network.onrender.com"
                 )
         },
         security = {
