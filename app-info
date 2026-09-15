@@ -1,0 +1,53 @@
+Register Api:
+http://localhost:8088/auth/register
+{
+  "firstname": "Pratima",
+  "lastname": "kumari",
+  "email": "kripratima1122@gmail.com",
+  "password": "Pratima@123"
+}
+
+Request will be accepted by the system and a One time password will be sent to email.
+
+
+Account Activation Api:
+http://localhost:8088/auth/activate-Account
+
+http://localhost:8088/auth/activate-account?token=987418
+
+Response:
+OK
+
+
+
+
+Login Api:
+http://localhost:8088/auth/authenticate
+
+{
+  "email": "kripratima1122@gmail.com",
+  "password": "Pratima@123"
+}
+
+{
+  "email": "kripratima51@gmail.com",
+  "password": "Pratima@123"
+}
+
+Response:
+{
+  "token": "x.y.z",
+  "userId":1,
+  "userName": "Pratima Kumari",
+  "userEmail": "kripratima1122@gmail"
+}
+
+
+===================================================================================================================
+
+
+
+
+
+
+
