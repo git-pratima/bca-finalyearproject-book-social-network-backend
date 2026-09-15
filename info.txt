@@ -1,0 +1,31 @@
+1) Import book-network as a maven project in IntelliJ
+2) import book-network-ui as angular project
+3) update the db username and password in book-network\src\main\resources\application-dev.yml
+4) open destop docker container
+5) open docker-compose.yml in terminal, and execute the command "docker compose up -d"
+6) Not start the backend
+7) For Ui run npm install
+8) run ng serve
+
+Swagger UI
+http://localhost:8088/swagger-ui/index.html
+
+Create user and Generate Token steps
+Go to postman and follow below
+http://localhost:8088/api/v1/auth/register
+{
+    "firstname":"Pratima",
+    "lastname":"Kumari",
+    "email":"kripratima1122@gmail.com.com",
+    "password":"Pratima@123"
+}
+
+Now go to http://localhost:1080/#/
+Copy the 6 digit OTP and trigger below url
+
+http://localhost:8088/api/v1/auth/activate-account?token=970947
+
+
+Or we can also create user from UI, localhost:4200/login
+
+
