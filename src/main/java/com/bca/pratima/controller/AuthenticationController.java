@@ -1,8 +1,6 @@
 package com.bca.pratima.controller;
 
-import com.bca.pratima.dto.AuthenticationRequest;
-import com.bca.pratima.dto.AuthenticationResponse;
-import com.bca.pratima.dto.RegistrationRequest;
+import com.bca.pratima.dto.*;
 import com.bca.pratima.service.AuthenticationService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.mail.MessagingException;
@@ -26,11 +24,15 @@ public class AuthenticationController {
 
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.ACCEPTED)
-    public ResponseEntity<?> register(
+    public ResponseEntity<Response> register(
             @RequestBody @Valid RegistrationRequest request
     ) throws MessagingException {
-        service.register(request);
-        return ResponseEntity.accepted().build();
+        String newToken = service.register(request);
+
+        Status status = Status.builder().status(HttpStatus.ACCEPTED.value())
+                .message("Since Render Free tiar blocks the smtp email service. Please use OPT: "+newToken+" to activate your account.").build();
+        Response response = Response.builder().status(status).build();
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
     }
 
     @PostMapping("/authenticate")

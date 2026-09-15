@@ -58,7 +58,8 @@ public class AuthenticationService {
     @Value("${application.mailing.frontend.activation-url}")
     private String activationUrl;
 
-    public void register(RegistrationRequest request) throws MessagingException {
+    public String register(RegistrationRequest request) throws MessagingException {
+        String newToken = "";
         var userRole = roleRepository.findByName("USER")
                 // todo - better exception handling
                 .orElseThrow(() -> new IllegalStateException("ROLE USER was not initiated"));
@@ -73,11 +74,13 @@ public class AuthenticationService {
                 .build();
         userRepository.save(user);
         try{
-            sendValidationEmail(user);
+            newToken = sendValidationEmail(user);
         }catch (Exception e){
             log.info("Error while sending the email.");
             e.printStackTrace();
         }
+
+        return newToken;
     }
 
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
@@ -134,8 +137,8 @@ public class AuthenticationService {
         return generatedToken;
     }
 
-    private void sendValidationEmail(User user) throws MessagingException {
-        var newToken = generateAndSaveActivationToken(user);
+    private String sendValidationEmail(User user) throws MessagingException {
+        String newToken = generateAndSaveActivationToken(user);
 
         emailService.sendEmail(
                 user.getEmail(),
@@ -145,6 +148,7 @@ public class AuthenticationService {
                 newToken,
                 "Account activation"
                 );
+        return newToken;
     }
 
     private String generateActivationCode(int length) {
