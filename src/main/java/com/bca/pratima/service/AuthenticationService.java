@@ -14,6 +14,7 @@ import com.bca.pratima.utils.EmailService;
 import com.bca.pratima.utils.EmailTemplateName;
 import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -28,6 +29,7 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AuthenticationService {
@@ -70,7 +72,12 @@ public class AuthenticationService {
                 .roles(List.of(userRole))
                 .build();
         userRepository.save(user);
-        sendValidationEmail(user);
+        try{
+            sendValidationEmail(user);
+        }catch (Exception e){
+            log.info("Error while sending the email.");
+            e.printStackTrace();
+        }
     }
 
     public AuthenticationResponse authenticate(AuthenticationRequest request) {

@@ -1,8 +1,8 @@
 spring:
   datasource:
-    url: ${db_url}
+    url: ${DB_URL}
     username: ${db_username}
-    password: ${db_password}
+    password: ${DB_PASSWORD}
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
@@ -44,5 +44,10 @@ application:
 
 server:
   port: 8088
+
+logging:
+  level:
+    root: INFO
+    com.pratima: DEBUG
 
 
