@@ -63,15 +63,19 @@ public class ProfileController {
         status.setMessage("Profile has been updated.");
         Response response = new Response();
         response.setStatus(status);
-        emailService.sendEmail(
-                user.getEmail(),
-                "FindMyVehicle - Your Profile Has Been Updated",
-                "Hello " + user.getName() + ",\n\n"
-                        + "Your FindMyVehicle profile has been successfully updated.\n\n"
-                        + "If you made this change, no further action is required.\n\n"
-                        + "If you did not make this change, please log in to your FindMyVehicle account "
-                        + "and secure your account immediately.\n"
-        );
+        try{
+            emailService.sendEmail(
+                    user.getEmail(),
+                    "FindMyVehicle - Your Profile Has Been Updated",
+                    "Hello " + user.getName() + ",\n\n"
+                            + "Your FindMyVehicle profile has been successfully updated.\n\n"
+                            + "If you made this change, no further action is required.\n\n"
+                            + "If you did not make this change, please log in to your FindMyVehicle account "
+                            + "and secure your account immediately.\n"
+            );
+        } catch (Exception e) {
+
+        }
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
