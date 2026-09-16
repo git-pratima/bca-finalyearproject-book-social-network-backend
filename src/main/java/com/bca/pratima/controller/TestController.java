@@ -19,18 +19,11 @@ public class TestController {
 
     @PostMapping(value = "/refresh")
     public String test(){
-        Optional<Test> testData = testRepository.findById(1);
-        if(testData.isPresent()){
-            Test test = testData.get();
-            test.setLastRefreshDate(new Date());
-            testRepository.save(test);
-        }else{
-            Test test = new Test();
-            test.setMessage("Test Table Refreshed.");
-            test.setLastRefreshDate(new Date());
-            testRepository.save(test);
-        }
-
+        testRepository.deleteAll();
+        Test test = new Test();
+        test.setMessage("Test Table Refreshed.");
+        test.setLastRefreshDate(new Date());
+        testRepository.save(test);
         return "Test Table Refreshed.";
     }
 
