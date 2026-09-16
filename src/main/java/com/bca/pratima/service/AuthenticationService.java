@@ -4,14 +4,20 @@ package com.bca.pratima.service;
 import com.bca.pratima.dto.AuthenticationRequest;
 import com.bca.pratima.dto.AuthenticationResponse;
 import com.bca.pratima.dto.RegistrationRequest;
+import com.bca.pratima.appenum.AuthProvider;
 import com.bca.pratima.entity.Token;
 import com.bca.pratima.entity.User;
+import com.bca.pratima.exception.InvalidCredentialsException;
 import com.bca.pratima.repository.RoleRepository;
 import com.bca.pratima.repository.TokenRepository;
 import com.bca.pratima.repository.UserRepository;
 import com.bca.pratima.security.JwtService;
 import com.bca.pratima.utils.EmailService;
 import com.bca.pratima.utils.EmailTemplateName;
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
+import com.google.api.client.http.javanet.NetHttpTransport;
+import com.google.api.client.json.gson.GsonFactory;
 import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,8 +32,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.UUID;
 
 @Slf4j
 @Service
@@ -58,11 +66,14 @@ public class AuthenticationService {
     @Value("${application.mailing.frontend.activation-url}")
     private String activationUrl;
 
+    @Value("${application.security.oauth2.google.client-id:}")
+    private String googleClientId;
+
     public String register(RegistrationRequest request) throws MessagingException {
         String newToken = "";
-        var userRole = roleRepository.findByName("USER")
+        var userRole = roleRepository.findByName("NORMAL")
                 // todo - better exception handling
-                .orElseThrow(() -> new IllegalStateException("ROLE USER was not initiated"));
+                .orElseThrow(() -> new IllegalStateException("ROLE NORMAL was not initiated"));
         var user = User.builder()
                 .firstname(request.getFirstname())
                 .lastname(request.getLastname())
@@ -70,6 +81,7 @@ public class AuthenticationService {
                 .password(passwordEncoder.encode(request.getPassword()))
                 .accountLocked(false)
                 .enabled(false)
+                .provider(AuthProvider.LOCAL)
                 .roles(List.of(userRole))
                 .build();
         userRepository.save(user);
@@ -91,11 +103,61 @@ public class AuthenticationService {
                 )
         );
 
-        var claims = new HashMap<String, Object>();
         var user = ((User) auth.getPrincipal());
+        return createAuthenticationResponse(user);
+    }
+
+    public AuthenticationResponse authenticateWithGoogle(String credential) {
+        if (googleClientId.isBlank()) {
+            throw new IllegalStateException("Google sign-in is not configured");
+        }
+
+        try {
+            GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(
+                    new NetHttpTransport(), GsonFactory.getDefaultInstance())
+                    .setAudience(Collections.singletonList(googleClientId))
+                    .build();
+            GoogleIdToken idToken = verifier.verify(credential);
+            if (idToken == null || !Boolean.TRUE.equals(idToken.getPayload().getEmailVerified())) {
+                throw new InvalidCredentialsException("Invalid Google credential");
+            }
+
+            GoogleIdToken.Payload payload = idToken.getPayload();
+            String email = payload.getEmail();
+            User user = userRepository.findByEmail(email)
+                    .orElseGet(() -> createGoogleUser(payload));
+            return createAuthenticationResponse(user);
+        } catch (InvalidCredentialsException exception) {
+            throw exception;
+        } catch (Exception exception) {
+            log.warn("Google sign-in failed", exception);
+            throw new InvalidCredentialsException("Invalid Google credential");
+        }
+    }
+
+    private User createGoogleUser(GoogleIdToken.Payload payload) {
+        var userRole = roleRepository.findByName("NORMAL")
+                .orElseThrow(() -> new IllegalStateException("ROLE NORMAL was not initiated"));
+        String firstName = payload.get("given_name") instanceof String name ? name : "Google";
+        String lastName = payload.get("family_name") instanceof String name ? name : "User";
+        var user = User.builder()
+                .firstname(firstName)
+                .lastname(lastName)
+                .email(payload.getEmail())
+                .password(passwordEncoder.encode(UUID.randomUUID().toString()))
+                .accountLocked(false)
+                .enabled(true)
+                .provider(AuthProvider.GOOGLE)
+                .roles(List.of(userRole))
+                .build();
+        return userRepository.save(user);
+    }
+
+    private AuthenticationResponse createAuthenticationResponse(User user) {
+        var claims = new HashMap<String, Object>();
         claims.put("fullName", user.getFullName());
 
-        var jwtToken = jwtService.generateToken(claims, (User) auth.getPrincipal());
+        var jwtToken = jwtService.generateToken(claims, user);
         return AuthenticationResponse.builder()
                 .token(jwtToken)
                 .userId(user.getId())

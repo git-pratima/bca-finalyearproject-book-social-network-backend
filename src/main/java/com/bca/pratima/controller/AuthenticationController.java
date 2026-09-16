@@ -41,6 +41,14 @@ public class AuthenticationController {
     ) {
         return ResponseEntity.ok(service.authenticate(request));
     }
+
+    @PostMapping("/google")
+    public ResponseEntity<AuthenticationResponse> authenticateWithGoogle(
+            @RequestBody @Valid GoogleAuthenticationRequest request
+    ) {
+        return ResponseEntity.ok(service.authenticateWithGoogle(request.getCredential()));
+    }
+
     @GetMapping("/activate-account")
     public void confirm(
             @RequestParam String token

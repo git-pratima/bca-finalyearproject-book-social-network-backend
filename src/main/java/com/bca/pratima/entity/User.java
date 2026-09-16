@@ -1,10 +1,8 @@
 package com.bca.pratima.entity;
 
+import com.bca.pratima.appenum.AuthProvider;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -51,6 +49,11 @@ public class User implements UserDetails, Principal {
     private boolean accountLocked;
 
     private boolean enabled;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    @Builder.Default
+    private AuthProvider provider = AuthProvider.LOCAL;
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "address_id")

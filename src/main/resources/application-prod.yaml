@@ -30,6 +30,11 @@ spring:
           writetimeout: 5000
 application:
   security:
+    oauth2:
+      google:
+        # The ID-token verifier reads this value. Configure it in Render rather
+        # than committing a credential to source control.
+        client-id: ${GOOGLE_CLIENT_ID}
     jwt:
       secret-key: ${secret_key}
       expiration: 86400000 # a day
