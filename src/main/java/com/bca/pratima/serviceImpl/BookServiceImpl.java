@@ -8,6 +8,7 @@ import com.bca.pratima.entity.Address;
 import com.bca.pratima.entity.Book;
 import com.bca.pratima.entity.BookTransactionHistory;
 import com.bca.pratima.entity.User;
+import com.bca.pratima.exception.AccessDeniedException;
 import com.bca.pratima.exception.OperationNotPermittedException;
 import com.bca.pratima.mapper.AddressMapper;
 import com.bca.pratima.mapper.BookMapper;
@@ -15,6 +16,7 @@ import com.bca.pratima.repository.BookRepository;
 import com.bca.pratima.repository.BookTransactionHistoryRepository;
 import com.bca.pratima.service.BookService;
 import com.bca.pratima.service.FileStorageService;
+import com.bca.pratima.utils.CloudinaryImageUtils;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,6 +30,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
 
@@ -52,6 +55,9 @@ public class BookServiceImpl implements BookService {
 
     @Autowired
     private FileStorageService fileStorageService;
+
+    @Autowired
+    private CloudinaryImageUtils cloudinaryImageUtils;
 
     @Override
     public Integer save(BookRequest request, Authentication connectedUser) {
@@ -223,14 +229,53 @@ public class BookServiceImpl implements BookService {
         bookTransactionHistory.setReturnApproved(true);
         return transactionHistoryRepository.save(bookTransactionHistory).getId();
     }
+//    @Override
+//    public void uploadBookCoverPicture(MultipartFile file, Authentication connectedUser, Integer bookId) {
+//        Book book = bookRepository.findById(bookId)
+//                .orElseThrow(() -> new EntityNotFoundException("No book found with ID:: " + bookId));
+//        User user = ((User) connectedUser.getPrincipal());
+//        var profilePicture = fileStorageService.saveFile(file, bookId, user.getId());
+//        book.setBookCover(profilePicture);
+//        bookRepository.save(book);
+//    }
+
     @Override
-    public void uploadBookCoverPicture(MultipartFile file, Authentication connectedUser, Integer bookId) {
+    public void uploadBookCoverPicture(
+            MultipartFile file,
+            Authentication connectedUser,
+            Integer bookId
+    ) {
+
         Book book = bookRepository.findById(bookId)
-                .orElseThrow(() -> new EntityNotFoundException("No book found with ID:: " + bookId));
-        User user = ((User) connectedUser.getPrincipal());
-        var profilePicture = fileStorageService.saveFile(file, bookId, user.getId());
-        book.setBookCover(profilePicture);
-        bookRepository.save(book);
+                .orElseThrow(() ->
+                        new EntityNotFoundException(
+                                "No book found with ID:: " + bookId
+                        )
+                );
+
+        User user = (User) connectedUser.getPrincipal();
+
+        // Make sure only the owner can upload/change the cover
+        if (!book.getOwner().getId().equals(user.getId())) {
+            throw new AccessDeniedException(
+                    "You are not allowed to change this book cover"
+            );
+        }
+
+        try {
+            String imageUrl =
+                    cloudinaryImageUtils.uploadImage(file, bookId);
+
+            book.setBookCover(imageUrl);
+
+            bookRepository.save(book);
+
+        } catch (Exception e) {
+            throw new RuntimeException(
+                    "Failed to upload book cover to Cloudinary",
+                    e
+            );
+        }
     }
     @Override
     public PageResponse<BorrowedBookResponse> findAllBorrowedBooks(int page, int size, Authentication connectedUser) {

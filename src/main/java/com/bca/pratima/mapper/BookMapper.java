@@ -7,7 +7,6 @@ import com.bca.pratima.dto.BorrowedBookResponse;
 import com.bca.pratima.entity.Address;
 import com.bca.pratima.entity.Book;
 import com.bca.pratima.entity.BookTransactionHistory;
-import com.bca.pratima.utils.FileUtils;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -53,7 +52,9 @@ public class BookMapper {
                 .bookAddress(addressDto)
                 .pickupInstructions(book.getPickupInstructions())
                 .pickUpLocation(book.getPickUpLocation())
-                .cover(FileUtils.readFileFromLocation(book.getBookCover()))
+                // Cloudinary stores a remote delivery URL, not a local file path.
+                // Returning it as-is also keeps books without covers null-safe.
+                .cover(book.getBookCover())
                 .build();
     }
 

@@ -66,7 +66,7 @@ public class ProfileController {
         try{
             emailService.sendEmail(
                     user.getEmail(),
-                    "FindMyVehicle - Your Profile Has Been Updated",
+                    "Book Social Network - Your Profile Has Been Updated",
                     "Hello " + user.getName() + ",\n\n"
                             + "Your FindMyVehicle profile has been successfully updated.\n\n"
                             + "If you made this change, no further action is required.\n\n"
