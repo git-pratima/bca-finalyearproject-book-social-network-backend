@@ -45,7 +45,17 @@ Response:
 
 ===================================================================================================================
 
+http://localhost:8088/books/borrow-book
 
+{
+  "bookId": 15,
+  "borrowFromDate": "2026-09-25T10:00:00",
+  "borrowToDate": "2026-10-05T10:00:00",
+  "returnPeriodDay": 10,
+  "agreeToFollowPickupInstruction": "YES",
+  "agreeToReturnBorrowedBookAtSameLocation": "YES",
+  "comment": "I will return the book in good condition."
+}
 
 
 

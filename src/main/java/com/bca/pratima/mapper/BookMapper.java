@@ -1,13 +1,12 @@
 package com.bca.pratima.mapper;
 
-import com.bca.pratima.dto.AddressDto;
-import com.bca.pratima.dto.BookRequest;
-import com.bca.pratima.dto.BookResponse;
-import com.bca.pratima.dto.BorrowedBookResponse;
-import com.bca.pratima.entity.Address;
-import com.bca.pratima.entity.Book;
-import com.bca.pratima.entity.BookTransactionHistory;
+import com.bca.pratima.appenum.BookBorrowStatus;
+import com.bca.pratima.dto.*;
+import com.bca.pratima.entity.*;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
+
+import java.util.Date;
 
 @Service
 public class BookMapper {
@@ -67,6 +66,36 @@ public class BookMapper {
                 .rate(history.getBook().getRate())
                 .returned(history.isReturned())
                 .returnApproved(history.isReturnApproved())
+                .build();
+    }
+
+    public BookBorrowRequest toBookBorrowRequest(BookBorrowRequestDto request,Book book, Authentication connectedUser) {
+        User borrower = (User) connectedUser.getPrincipal();
+        return BookBorrowRequest.builder()
+                .requestDate(new Date())
+                .borrowToDate(request.getBorrowToDate())
+                .borrowFromDate(request.getBorrowFromDate())
+                .returnPeriodDay(request.getReturnPeriodDay())
+                .finalReturnDate(request.getFinalReturnDate())
+                .status(BookBorrowStatus.SUBMITTED)
+                .agreeToFollowPickupInstruction(request.getAgreeToFollowPickupInstruction())
+                .agreeToReturnBorrowedBookAtSameLocation(request.getAgreeToReturnBorrowedBookAtSameLocation())
+                .comment(request.getComment())
+                .book(book)
+                .borrower(borrower).build();
+    }
+
+    public BookBorrowResponseDto toBookBorrowResponse(BookBorrowRequest savedBookBorrowRequest) {
+        return BookBorrowResponseDto.builder()
+                .bookName(savedBookBorrowRequest.getBook().getTitle())
+                .borrowRequestId(savedBookBorrowRequest.getId())
+                .borrowToDate(savedBookBorrowRequest.getBorrowToDate())
+                .borrowFromDate(savedBookBorrowRequest.getBorrowFromDate())
+                .comment(savedBookBorrowRequest.getComment())
+                .returnPeriodDay(savedBookBorrowRequest.getReturnPeriodDay())
+                .agreeToReturnBorrowedBookAtSameLocation(savedBookBorrowRequest.getAgreeToReturnBorrowedBookAtSameLocation())
+                .agreeToFollowPickupInstruction(savedBookBorrowRequest.getAgreeToFollowPickupInstruction())
+                .finalReturnDate(savedBookBorrowRequest.getFinalReturnDate())
                 .build();
     }
 }

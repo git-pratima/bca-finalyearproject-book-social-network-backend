@@ -1,10 +1,8 @@
 package com.bca.pratima.service;
 
-import com.bca.pratima.dto.BookRequest;
-import com.bca.pratima.dto.BookResponse;
-import com.bca.pratima.dto.BorrowedBookResponse;
-import com.bca.pratima.dto.PageResponse;
+import com.bca.pratima.dto.*;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -45,4 +43,6 @@ public interface BookService {
     public PageResponse<BorrowedBookResponse> findAllBorrowedBooks(int page, int size, Authentication connectedUser);
 
     public PageResponse<BorrowedBookResponse> findAllReturnedBooks(int page, int size, Authentication connectedUser);
+
+    BookBorrowResponseDto createBorrowRequest(@Valid BookBorrowRequestDto request, Authentication connectedUser);
 }

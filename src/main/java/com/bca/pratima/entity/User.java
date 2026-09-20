@@ -65,6 +65,9 @@ public class User implements UserDetails, Principal {
     @OneToMany(mappedBy = "owner")
     private List<Book> books;
 
+    @OneToMany(mappedBy = "borrower")
+    private List<BookBorrowRequest> bookBorrowRequests;
+
     @OneToMany(mappedBy = "user")
     private List<BookTransactionHistory> histories;
 

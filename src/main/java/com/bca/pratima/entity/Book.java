@@ -34,6 +34,8 @@ public class Book{
 
     private String isbn;
 
+    @Size(max = 2500, message = "Pickup instructions must not exceed 2500 characters")
+    @Column(length = 2500)
     private String synopsis;
 
     private String bookCover;
@@ -63,6 +65,9 @@ public class Book{
 
     @OneToMany(mappedBy = "book")
     private List<BookTransactionHistory> histories;
+
+    @OneToMany(mappedBy = "book")
+    private List<BookBorrowRequest> borrowRequests;
 
     @Column(name="CREATED_DATE")
     @Temporal(TemporalType.TIMESTAMP)

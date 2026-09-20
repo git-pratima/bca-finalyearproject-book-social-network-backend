@@ -1,17 +1,12 @@
 package com.bca.pratima.serviceImpl;
 
-import com.bca.pratima.dto.BookRequest;
-import com.bca.pratima.dto.BookResponse;
-import com.bca.pratima.dto.BorrowedBookResponse;
-import com.bca.pratima.dto.PageResponse;
-import com.bca.pratima.entity.Address;
-import com.bca.pratima.entity.Book;
-import com.bca.pratima.entity.BookTransactionHistory;
-import com.bca.pratima.entity.User;
+import com.bca.pratima.dto.*;
+import com.bca.pratima.entity.*;
 import com.bca.pratima.exception.AccessDeniedException;
 import com.bca.pratima.exception.OperationNotPermittedException;
 import com.bca.pratima.mapper.AddressMapper;
 import com.bca.pratima.mapper.BookMapper;
+import com.bca.pratima.repository.BookBorrowRepository;
 import com.bca.pratima.repository.BookRepository;
 import com.bca.pratima.repository.BookTransactionHistoryRepository;
 import com.bca.pratima.service.BookService;
@@ -58,6 +53,9 @@ public class BookServiceImpl implements BookService {
 
     @Autowired
     private CloudinaryImageUtils cloudinaryImageUtils;
+
+    @Autowired
+    private BookBorrowRepository bookBorrowRepository;
 
     @Override
     public Integer save(BookRequest request, Authentication connectedUser) {
@@ -312,5 +310,24 @@ public class BookServiceImpl implements BookService {
                 allBorrowedBooks.isFirst(),
                 allBorrowedBooks.isLast()
         );
+    }
+
+    @Override
+    public BookBorrowResponseDto createBorrowRequest(BookBorrowRequestDto request, Authentication connectedUser) {
+
+        Book book = bookRepository.findById(request.getBookId())
+                .orElseThrow(() ->
+                        new EntityNotFoundException(
+                                "No book found with ID:: " + request.getBookId()
+                        )
+                );
+
+        BookBorrowRequest bookBorrowRequest = bookMapper.toBookBorrowRequest(request, book, connectedUser);
+
+        BookBorrowRequest savedBookBorrowRequest = bookBorrowRepository.save(bookBorrowRequest);
+
+        BookBorrowResponseDto bookBorrowResponseDto = bookMapper.toBookBorrowResponse(savedBookBorrowRequest);
+
+        return bookBorrowResponseDto;
     }
 }

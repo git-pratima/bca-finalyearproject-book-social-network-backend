@@ -1,15 +1,14 @@
 package com.bca.pratima.controller;
 
-import com.bca.pratima.dto.BookRequest;
-import com.bca.pratima.dto.BookResponse;
-import com.bca.pratima.dto.BorrowedBookResponse;
-import com.bca.pratima.dto.PageResponse;
+import com.bca.pratima.dto.*;
+import com.bca.pratima.entity.BookBorrowRequest;
 import com.bca.pratima.service.BookService;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -22,21 +21,21 @@ import org.springframework.web.multipart.MultipartFile;
 public class BookController {
 
     @Autowired
-    private BookService service;
+    private BookService bookService;
 
     @PostMapping
     public ResponseEntity<Integer> saveBook(
             @Valid @RequestBody BookRequest request,
             Authentication connectedUser
     ) {
-        return ResponseEntity.ok(service.save(request, connectedUser));
+        return ResponseEntity.ok(bookService.save(request, connectedUser));
     }
 
     @GetMapping("/{book-id}")
     public ResponseEntity<BookResponse> findBookById(
             @PathVariable("book-id") Integer bookId
     ) {
-        return ResponseEntity.ok(service.findById(bookId));
+        return ResponseEntity.ok(bookService.findById(bookId));
     }
 
     @GetMapping
@@ -45,7 +44,7 @@ public class BookController {
             @RequestParam(name = "size", defaultValue = "10", required = false) int size,
             Authentication connectedUser
     ) {
-        return ResponseEntity.ok(service.findAllBooks(page, size, connectedUser));
+        return ResponseEntity.ok(bookService.findAllBooks(page, size, connectedUser));
     }
 
     @GetMapping("/owner")
@@ -54,7 +53,7 @@ public class BookController {
             @RequestParam(name = "size", defaultValue = "10", required = false) int size,
             Authentication connectedUser
     ) {
-        return ResponseEntity.ok(service.findAllBooksByOwner(page, size, connectedUser));
+        return ResponseEntity.ok(bookService.findAllBooksByOwner(page, size, connectedUser));
     }
 
     @GetMapping("/borrowed")
@@ -63,7 +62,7 @@ public class BookController {
             @RequestParam(name = "size", defaultValue = "10", required = false) int size,
             Authentication connectedUser
     ) {
-        return ResponseEntity.ok(service.findAllBorrowedBooks(page, size, connectedUser));
+        return ResponseEntity.ok(bookService.findAllBorrowedBooks(page, size, connectedUser));
     }
 
     @GetMapping("/returned")
@@ -72,7 +71,7 @@ public class BookController {
             @RequestParam(name = "size", defaultValue = "10", required = false) int size,
             Authentication connectedUser
     ) {
-        return ResponseEntity.ok(service.findAllReturnedBooks(page, size, connectedUser));
+        return ResponseEntity.ok(bookService.findAllReturnedBooks(page, size, connectedUser));
     }
 
     @PatchMapping("/shareable/{book-id}")
@@ -80,7 +79,7 @@ public class BookController {
             @PathVariable("book-id") Integer bookId,
             Authentication connectedUser
     ) {
-        return ResponseEntity.ok(service.updateShareableStatus(bookId, connectedUser));
+        return ResponseEntity.ok(bookService.updateShareableStatus(bookId, connectedUser));
     }
 
     @PatchMapping("/archived/{book-id}")
@@ -88,7 +87,7 @@ public class BookController {
             @PathVariable("book-id") Integer bookId,
             Authentication connectedUser
     ) {
-        return ResponseEntity.ok(service.updateArchivedStatus(bookId, connectedUser));
+        return ResponseEntity.ok(bookService.updateArchivedStatus(bookId, connectedUser));
     }
 
     @PostMapping("borrow/{book-id}")
@@ -96,7 +95,24 @@ public class BookController {
             @PathVariable("book-id") Integer bookId,
             Authentication connectedUser
     ) {
-        return ResponseEntity.ok(service.borrowBook(bookId, connectedUser));
+        return ResponseEntity.ok(bookService.borrowBook(bookId, connectedUser));
+    }
+
+    @PostMapping("/borrow-book")
+    public ResponseEntity<Response> createBorrowRequest(
+            @Valid @RequestBody BookBorrowRequestDto request,
+            Authentication connectedUser
+    ) {
+        BookBorrowResponseDto book = bookService.createBorrowRequest(request,connectedUser);
+        Status status = new Status();
+        status.setStatus(HttpStatus.OK.value());
+        status.setMessage("Book Borrow Request Submitted.");
+
+        Response response = new Response();
+        response.setStatus(status);
+        response.setData(book);
+
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     @PatchMapping("borrow/return/{book-id}")
@@ -104,7 +120,7 @@ public class BookController {
             @PathVariable("book-id") Integer bookId,
             Authentication connectedUser
     ) {
-        return ResponseEntity.ok(service.returnBorrowedBook(bookId, connectedUser));
+        return ResponseEntity.ok(bookService.returnBorrowedBook(bookId, connectedUser));
     }
 
     @PatchMapping("borrow/return/approve/{book-id}")
@@ -112,7 +128,7 @@ public class BookController {
             @PathVariable("book-id") Integer bookId,
             Authentication connectedUser
     ) {
-        return ResponseEntity.ok(service.approveReturnBorrowedBook(bookId, connectedUser));
+        return ResponseEntity.ok(bookService.approveReturnBorrowedBook(bookId, connectedUser));
     }
 
     @PostMapping(value = "/cover/{book-id}", consumes = "multipart/form-data")
@@ -122,7 +138,7 @@ public class BookController {
             @RequestPart("file") MultipartFile file,
             Authentication connectedUser
     ) {
-        service.uploadBookCoverPicture(file, connectedUser, bookId);
+        bookService.uploadBookCoverPicture(file, connectedUser, bookId);
         return ResponseEntity.accepted().build();
     }
 }
