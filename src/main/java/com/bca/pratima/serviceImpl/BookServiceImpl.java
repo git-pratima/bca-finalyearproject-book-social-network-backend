@@ -1,5 +1,6 @@
 package com.bca.pratima.serviceImpl;
 
+import com.bca.pratima.appenum.BookBorrowStatus;
 import com.bca.pratima.dto.*;
 import com.bca.pratima.entity.*;
 import com.bca.pratima.exception.AccessDeniedException;
@@ -227,15 +228,6 @@ public class BookServiceImpl implements BookService {
         bookTransactionHistory.setReturnApproved(true);
         return transactionHistoryRepository.save(bookTransactionHistory).getId();
     }
-//    @Override
-//    public void uploadBookCoverPicture(MultipartFile file, Authentication connectedUser, Integer bookId) {
-//        Book book = bookRepository.findById(bookId)
-//                .orElseThrow(() -> new EntityNotFoundException("No book found with ID:: " + bookId));
-//        User user = ((User) connectedUser.getPrincipal());
-//        var profilePicture = fileStorageService.saveFile(file, bookId, user.getId());
-//        book.setBookCover(profilePicture);
-//        bookRepository.save(book);
-//    }
 
     @Override
     public void uploadBookCoverPicture(
@@ -277,12 +269,17 @@ public class BookServiceImpl implements BookService {
     }
     @Override
     public PageResponse<BorrowedBookResponse> findAllBorrowedBooks(int page, int size, Authentication connectedUser) {
+
         User user = ((User) connectedUser.getPrincipal());
+
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdDate").descending());
+
         Page<BookTransactionHistory> allBorrowedBooks = transactionHistoryRepository.findAllBorrowedBooks(pageable, user.getId());
+
         List<BorrowedBookResponse> booksResponse = allBorrowedBooks.stream()
                 .map(bookMapper::toBorrowedBookResponse)
                 .toList();
+
         return new PageResponse<>(
                 booksResponse,
                 allBorrowedBooks.getNumber(),
@@ -313,6 +310,24 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
+    public PageResponse<BookBorrowResponseDto> findSubmittedUserBookBorrowRequest(int page, int size, Authentication connectedUser) {
+        User user = ((User) connectedUser.getPrincipal());
+        Pageable pageable = PageRequest.of(page, size, Sort.by("requestDate").descending());
+        Page<BookBorrowRequest> submittedUserBookBorrowRequest = bookBorrowRepository.findSubmittedUserBookBorrowRequest(pageable, user.getId(), BookBorrowStatus.SUBMITTED);
+        List<BookBorrowResponseDto> booksResponse = bookMapper.toBookBorrowResponseDto(submittedUserBookBorrowRequest.getContent());
+
+        return new PageResponse<>(
+                booksResponse,
+                submittedUserBookBorrowRequest.getNumber(),
+                submittedUserBookBorrowRequest.getSize(),
+                submittedUserBookBorrowRequest.getTotalElements(),
+                submittedUserBookBorrowRequest.getTotalPages(),
+                submittedUserBookBorrowRequest.isFirst(),
+                submittedUserBookBorrowRequest.isLast()
+        );
+    }
+
+    @Override
     public BookBorrowResponseDto createBorrowRequest(BookBorrowRequestDto request, Authentication connectedUser) {
 
         Book book = bookRepository.findById(request.getBookId())
@@ -330,4 +345,6 @@ public class BookServiceImpl implements BookService {
 
         return bookBorrowResponseDto;
     }
+
+
 }

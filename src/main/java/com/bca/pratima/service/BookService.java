@@ -45,4 +45,6 @@ public interface BookService {
     public PageResponse<BorrowedBookResponse> findAllReturnedBooks(int page, int size, Authentication connectedUser);
 
     BookBorrowResponseDto createBorrowRequest(@Valid BookBorrowRequestDto request, Authentication connectedUser);
+
+    PageResponse<BookBorrowResponseDto> findSubmittedUserBookBorrowRequest(int page, int size, Authentication connectedUser);
 }

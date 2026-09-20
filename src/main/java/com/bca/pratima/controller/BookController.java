@@ -2,6 +2,7 @@ package com.bca.pratima.controller;
 
 import com.bca.pratima.dto.*;
 import com.bca.pratima.entity.BookBorrowRequest;
+import com.bca.pratima.repository.BookBorrowRepository;
 import com.bca.pratima.service.BookService;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -13,6 +14,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("books")
@@ -29,6 +32,25 @@ public class BookController {
             Authentication connectedUser
     ) {
         return ResponseEntity.ok(bookService.save(request, connectedUser));
+    }
+
+    @GetMapping("/borrow-request")
+    public ResponseEntity<Response> findAllBorrowedBooks(
+            @RequestParam(name = "page", defaultValue = "0", required = false) int page,
+            @RequestParam(name = "size", defaultValue = "5", required = false) int size,
+            Authentication connectedUser
+    ) {
+
+        PageResponse<BookBorrowResponseDto> userBookBorrowRequest =  bookService.findSubmittedUserBookBorrowRequest(page, size, connectedUser);
+        Status status = new Status();
+        status.setStatus(HttpStatus.OK.value());
+        status.setMessage("Submitted User Book Borrow Request.");
+
+        Response response = new Response();
+        response.setStatus(status);
+        response.setData(userBookBorrowRequest);
+
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     @GetMapping("/{book-id}")
@@ -54,15 +76,6 @@ public class BookController {
             Authentication connectedUser
     ) {
         return ResponseEntity.ok(bookService.findAllBooksByOwner(page, size, connectedUser));
-    }
-
-    @GetMapping("/borrowed")
-    public ResponseEntity<PageResponse<BorrowedBookResponse>> findAllBorrowedBooks(
-            @RequestParam(name = "page", defaultValue = "0", required = false) int page,
-            @RequestParam(name = "size", defaultValue = "10", required = false) int size,
-            Authentication connectedUser
-    ) {
-        return ResponseEntity.ok(bookService.findAllBorrowedBooks(page, size, connectedUser));
     }
 
     @GetMapping("/returned")

@@ -3,13 +3,22 @@ package com.bca.pratima.mapper;
 import com.bca.pratima.appenum.BookBorrowStatus;
 import com.bca.pratima.dto.*;
 import com.bca.pratima.entity.*;
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @Service
 public class BookMapper {
+
+
+    @Autowired
+    private ModelMapper modelMapper;
+
     public Book toBook(BookRequest request) {
         return Book.builder()
                 .id(request.getId())
@@ -97,5 +106,17 @@ public class BookMapper {
                 .agreeToFollowPickupInstruction(savedBookBorrowRequest.getAgreeToFollowPickupInstruction())
                 .finalReturnDate(savedBookBorrowRequest.getFinalReturnDate())
                 .build();
+    }
+
+    public List<BookBorrowResponseDto> toBookBorrowResponseDto(List<BookBorrowRequest> bookBorrowRequestList) {
+
+        List<BookBorrowResponseDto> list = new ArrayList<BookBorrowResponseDto>();
+
+        for(BookBorrowRequest bookBorrowRequest : bookBorrowRequestList){
+            BookBorrowResponseDto bookBorrowResponseDto = modelMapper.map(bookBorrowRequest, BookBorrowResponseDto.class);
+
+            list.add(bookBorrowResponseDto);
+        }
+        return list;
     }
 }

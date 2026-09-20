@@ -3,6 +3,7 @@ package com.bca.pratima;
 import com.bca.pratima.entity.Role;
 import com.bca.pratima.repository.RoleRepository;
 import com.bca.pratima.repository.UserRepository;
+import org.modelmapper.ModelMapper;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -20,6 +21,11 @@ public class BcaFinalYearProjectApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(BcaFinalYearProjectApplication.class, args);
 	}
+
+    @Bean
+    public ModelMapper modelMapper() {
+        return new ModelMapper();
+    }
 
     @Bean
     public CommandLineRunner runner(RoleRepository roleRepository, UserRepository userRepository) {
