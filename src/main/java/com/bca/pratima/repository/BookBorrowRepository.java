@@ -13,11 +13,23 @@ import org.springframework.stereotype.Repository;
 public interface BookBorrowRepository extends JpaRepository<BookBorrowRequest, Integer> {
 
     @Query("""
+    SELECT b
+    FROM BookBorrowRequest b
+    WHERE b.bookOwner.id = :id
+      AND b.borrower.id <> :id
+      AND b.status = :status
+    """)
+    Page<BookBorrowRequest> findSubmittedUserBookBorrowRequest(Pageable pageable,
+                                                               @Param("id") Integer id,
+                                                               @Param("status") BookBorrowStatus status);
+
+
+    @Query("""
         SELECT b
         FROM BookBorrowRequest b
         WHERE b.borrower.id = :id
         AND b.status = :status""")
-    Page<BookBorrowRequest> findSubmittedUserBookBorrowRequest(Pageable pageable,
+    Page<BookBorrowRequest> findBorrowedBooks(Pageable pageable,
                                                                @Param("id") Integer id,
                                                                @Param("status") BookBorrowStatus status);
 }

@@ -17,7 +17,7 @@ import java.util.Date;
 @AllArgsConstructor
 public class BookBorrowResponseDto {
 
-    private String bookId;
+    private Integer bookId;
 
     private String bookName;
 

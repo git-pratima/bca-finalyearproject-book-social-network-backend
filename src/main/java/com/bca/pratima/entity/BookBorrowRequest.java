@@ -66,6 +66,10 @@ public class BookBorrowRequest {
     private User borrower;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "book_owner_id", nullable = false)
+    private User bookOwner;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "book_id", nullable = false)
     private Book book;
 

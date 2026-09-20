@@ -66,7 +66,10 @@ public class User implements UserDetails, Principal {
     private List<Book> books;
 
     @OneToMany(mappedBy = "borrower")
-    private List<BookBorrowRequest> bookBorrowRequests;
+    private List<BookBorrowRequest> borrowRequests;
+
+    @OneToMany(mappedBy = "bookOwner")
+    private List<BookBorrowRequest> bookOwnerBorrowRequests;
 
     @OneToMany(mappedBy = "user")
     private List<BookTransactionHistory> histories;

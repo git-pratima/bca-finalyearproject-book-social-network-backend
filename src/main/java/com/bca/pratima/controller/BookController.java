@@ -35,13 +35,32 @@ public class BookController {
     }
 
     @GetMapping("/borrow-request")
-    public ResponseEntity<Response> findAllBorrowedBooks(
+    public ResponseEntity<Response> findSubmittedUserBookBorrowRequest(
             @RequestParam(name = "page", defaultValue = "0", required = false) int page,
             @RequestParam(name = "size", defaultValue = "5", required = false) int size,
             Authentication connectedUser
     ) {
 
         PageResponse<BookBorrowResponseDto> userBookBorrowRequest =  bookService.findSubmittedUserBookBorrowRequest(page, size, connectedUser);
+        Status status = new Status();
+        status.setStatus(HttpStatus.OK.value());
+        status.setMessage("Submitted User Book Borrow Request.");
+
+        Response response = new Response();
+        response.setStatus(status);
+        response.setData(userBookBorrowRequest);
+
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+    @GetMapping("/borrowed")
+    public ResponseEntity<Response> findBorrowedBooks(
+            @RequestParam(name = "page", defaultValue = "0", required = false) int page,
+            @RequestParam(name = "size", defaultValue = "5", required = false) int size,
+            Authentication connectedUser
+    ) {
+
+        PageResponse<BookBorrowResponseDto> userBookBorrowRequest =  bookService.findBorrowedBooks(page, size, connectedUser);
         Status status = new Status();
         status.setStatus(HttpStatus.OK.value());
         status.setMessage("Submitted User Book Borrow Request.");
