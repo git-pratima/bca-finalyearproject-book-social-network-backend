@@ -23,6 +23,8 @@ public class BookBorrowResponseDto {
 
     private String bookCover;
 
+    private String author;
+
     @Enumerated(EnumType.STRING)
     private BookBorrowStatus status;
 

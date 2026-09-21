@@ -1,5 +1,6 @@
 package com.bca.pratima.serviceImpl;
 
+import com.bca.pratima.appenum.AppStatus;
 import com.bca.pratima.appenum.BookBorrowStatus;
 import com.bca.pratima.dto.*;
 import com.bca.pratima.entity.*;
@@ -13,6 +14,7 @@ import com.bca.pratima.repository.BookTransactionHistoryRepository;
 import com.bca.pratima.service.BookService;
 import com.bca.pratima.service.FileStorageService;
 import com.bca.pratima.utils.CloudinaryImageUtils;
+import com.bca.pratima.utils.UserUtils;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -57,6 +59,9 @@ public class BookServiceImpl implements BookService {
 
     @Autowired
     private BookBorrowRepository bookBorrowRepository;
+
+    @Autowired
+    private UserUtils userUtils;
 
     @Override
     public Integer save(BookRequest request, Authentication connectedUser) {
@@ -328,11 +333,45 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public PageResponse<BookBorrowResponseDto> findBorrowedBooks(int page, int size, Authentication connectedUser) {
-        User user = ((User) connectedUser.getPrincipal());
-        Pageable pageable = PageRequest.of(page, size, Sort.by("requestDate").descending());
-        Page<BookBorrowRequest> submittedUserBookBorrowRequest = bookBorrowRepository.findBorrowedBooks(pageable, user.getId(), BookBorrowStatus.SUBMITTED);
-        List<BookBorrowResponseDto> booksResponse = bookMapper.toBookBorrowResponseDto(submittedUserBookBorrowRequest.getContent());
+    public PageResponse<BookBorrowResponseDto> findBorrowedBooks(
+            int page,
+            int size,
+            Authentication connectedUser,
+            BookBorrowStatus status,
+            String searchParameter,
+            String searchKeyword
+    ) {
+
+        User user = (User) connectedUser.getPrincipal();
+
+        Pageable pageable = PageRequest.of(
+                page,
+                size,
+                Sort.by("requestDate").descending()
+        );
+
+        // Handle empty strings
+        if (searchParameter != null && searchParameter.isBlank()) {
+            searchParameter = null;
+        }
+
+        if (searchKeyword != null && searchKeyword.isBlank()) {
+            searchKeyword = null;
+        }
+
+        Page<BookBorrowRequest> submittedUserBookBorrowRequest =
+                bookBorrowRepository.findBorrowedBooks(
+                        pageable,
+                        user.getId(),
+                        status,
+                        searchParameter,
+                        searchKeyword
+                );
+
+        List<BookBorrowResponseDto> booksResponse =
+                bookMapper.toBookBorrowResponseDto(
+                        submittedUserBookBorrowRequest.getContent()
+                );
 
         return new PageResponse<>(
                 booksResponse,
@@ -362,6 +401,17 @@ public class BookServiceImpl implements BookService {
         BookBorrowResponseDto bookBorrowResponseDto = bookMapper.toBookBorrowResponse(savedBookBorrowRequest);
 
         return bookBorrowResponseDto;
+    }
+
+
+    @Override
+    public Long countSharedBookByUser(boolean archived,boolean shareable,User user) {
+        return bookRepository.countByArchivedAndShareableAndOwner_Id(archived,shareable,user.getId());
+    }
+
+    @Override
+    public Long countBorrowedBooksByUser(User user, BookBorrowStatus status) {
+        return bookBorrowRepository.countBorrowedBooksByUser(user.getId(), status);
     }
 
 

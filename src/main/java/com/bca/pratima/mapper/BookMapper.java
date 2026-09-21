@@ -136,6 +136,7 @@ public class BookMapper {
                     .bookName(bookBorrowRequest.getBook().getTitle())
                     .borrowRequestId(bookBorrowRequest.getId())
                     .bookCover(bookBorrowRequest.getBook().getBookCover())
+                    .author(bookBorrowRequest.getBook().getAuthorName())
                     .borrowToDate(bookBorrowRequest.getBorrowToDate())
                     .borrowFromDate(bookBorrowRequest.getBorrowFromDate())
                     .comment(bookBorrowRequest.getComment())

@@ -1,6 +1,8 @@
 package com.bca.pratima.service;
 
+import com.bca.pratima.appenum.BookBorrowStatus;
 import com.bca.pratima.dto.*;
+import com.bca.pratima.entity.User;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -44,9 +46,14 @@ public interface BookService {
 
     public PageResponse<BorrowedBookResponse> findAllReturnedBooks(int page, int size, Authentication connectedUser);
 
+    //
     BookBorrowResponseDto createBorrowRequest(@Valid BookBorrowRequestDto request, Authentication connectedUser);
 
     PageResponse<BookBorrowResponseDto> findSubmittedUserBookBorrowRequest(int page, int size, Authentication connectedUser);
 
-    PageResponse<BookBorrowResponseDto> findBorrowedBooks(int page, int size, Authentication connectedUser);
+    PageResponse<BookBorrowResponseDto> findBorrowedBooks(int page, int size, Authentication connectedUser,BookBorrowStatus status,String searchParameter,String searchKeyword);
+
+    Long countSharedBookByUser(boolean archived,boolean shareable,User connectedUser);
+
+    Long countBorrowedBooksByUser(User connectedUser, BookBorrowStatus status);
 }

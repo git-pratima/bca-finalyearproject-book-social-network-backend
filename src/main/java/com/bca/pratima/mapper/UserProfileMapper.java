@@ -1,15 +1,21 @@
 package com.bca.pratima.mapper;
 
+import com.bca.pratima.appenum.BookBorrowStatus;
 import com.bca.pratima.dto.AddressDto;
 import com.bca.pratima.dto.UserProfile;
 import com.bca.pratima.entity.Address;
 import com.bca.pratima.entity.User;
+import com.bca.pratima.repository.BookBorrowRepository;
+import com.bca.pratima.service.BookService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class UserProfileMapper {
+
+    @Autowired
+    private BookService bookService;
 
     public User userProfileToUser(UserProfile userProfile, User user) {
         Address address = user.getAddress();
@@ -60,8 +66,8 @@ public class UserProfileMapper {
         userProfile.setLastName(user.getLastname());
         userProfile.setEmail(user.getEmail());
         userProfile.setMemberSince(user.getCreatedDate());
-        userProfile.setNumberOfBooksShared(3);
-        userProfile.setNumberOfBooksBorrowed(6);
+        userProfile.setNumberOfBooksShared(bookService.countSharedBookByUser(false,true,user));
+        userProfile.setNumberOfBooksBorrowed(bookService.countBorrowedBooksByUser(user, BookBorrowStatus.APPROVED));
         if(address!=null){
             userProfile.getAddress().setId(address.getId());
             userProfile.getAddress().setAddressLine1(address.getAddressLine1());

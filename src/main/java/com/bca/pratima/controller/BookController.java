@@ -1,5 +1,6 @@
 package com.bca.pratima.controller;
 
+import com.bca.pratima.appenum.BookBorrowStatus;
 import com.bca.pratima.dto.*;
 import com.bca.pratima.entity.BookBorrowRequest;
 import com.bca.pratima.repository.BookBorrowRepository;
@@ -57,10 +58,15 @@ public class BookController {
     public ResponseEntity<Response> findBorrowedBooks(
             @RequestParam(name = "page", defaultValue = "0", required = false) int page,
             @RequestParam(name = "size", defaultValue = "5", required = false) int size,
+            @RequestParam(name = "status", required = false) BookBorrowStatus bookBorrowStatus,
+            @RequestParam(name = "searchParameter", required = false) String searchParameter,
+            @RequestParam(name = "searchKeyword", required = false) String searchKeyword,
             Authentication connectedUser
     ) {
 
-        PageResponse<BookBorrowResponseDto> userBookBorrowRequest =  bookService.findBorrowedBooks(page, size, connectedUser);
+        PageResponse<BookBorrowResponseDto> userBookBorrowRequest =  bookService.findBorrowedBooks(page, size, connectedUser, bookBorrowStatus,
+                searchParameter,
+                searchKeyword);
         Status status = new Status();
         status.setStatus(HttpStatus.OK.value());
         status.setMessage("Submitted User Book Borrow Request.");
@@ -127,6 +133,7 @@ public class BookController {
             @PathVariable("book-id") Integer bookId,
             Authentication connectedUser
     ) {
+        //TODO
         return ResponseEntity.ok(bookService.borrowBook(bookId, connectedUser));
     }
 
@@ -152,6 +159,7 @@ public class BookController {
             @PathVariable("book-id") Integer bookId,
             Authentication connectedUser
     ) {
+        //TODO
         return ResponseEntity.ok(bookService.returnBorrowedBook(bookId, connectedUser));
     }
 
@@ -160,6 +168,7 @@ public class BookController {
             @PathVariable("book-id") Integer bookId,
             Authentication connectedUser
     ) {
+        //TODO
         return ResponseEntity.ok(bookService.approveReturnBorrowedBook(bookId, connectedUser));
     }
 

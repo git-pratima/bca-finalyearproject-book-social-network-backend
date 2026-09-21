@@ -25,11 +25,38 @@ public interface BookBorrowRepository extends JpaRepository<BookBorrowRequest, I
 
 
     @Query("""
-        SELECT b
-        FROM BookBorrowRequest b
-        WHERE b.borrower.id = :id
-        AND b.status = :status""")
-    Page<BookBorrowRequest> findBorrowedBooks(Pageable pageable,
-                                                               @Param("id") Integer id,
-                                                               @Param("status") BookBorrowStatus status);
+    SELECT b
+    FROM BookBorrowRequest b
+    WHERE b.borrower.id = :id
+    AND (:status IS NULL OR b.status = :status)
+    AND (
+        :searchKeyword IS NULL
+        OR :searchKeyword = ''
+        OR (
+            (:searchParameter = 'title'
+                AND LOWER(b.book.title) LIKE LOWER(CONCAT('%', :searchKeyword, '%')))
+            OR
+            (:searchParameter = 'authorName'
+                AND LOWER(b.book.authorName) LIKE LOWER(CONCAT('%', :searchKeyword, '%')))
+            OR
+            (:searchParameter = 'isbn'
+                AND LOWER(b.book.isbn) LIKE LOWER(CONCAT('%', :searchKeyword, '%')))
+        )
+    )
+""")
+    Page<BookBorrowRequest> findBorrowedBooks(
+            Pageable pageable,
+            @Param("id") Integer id,
+            @Param("status") BookBorrowStatus status,
+            @Param("searchParameter") String searchParameter,
+            @Param("searchKeyword") String searchKeyword
+    );
+
+
+    @Query("""
+    SELECT COUNT(b)
+    FROM BookBorrowRequest b
+    WHERE b.borrower.id = :userId
+    AND b.status = :status""")
+    Long countBorrowedBooksByUser(@Param("userId") Integer userId, @Param("status") BookBorrowStatus status);
 }

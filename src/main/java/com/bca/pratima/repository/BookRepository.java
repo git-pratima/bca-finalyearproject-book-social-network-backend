@@ -1,6 +1,7 @@
 package com.bca.pratima.repository;
 
 import com.bca.pratima.entity.Book;
+import com.bca.pratima.entity.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -16,4 +17,10 @@ public interface BookRepository extends JpaRepository<Book, Integer>, JpaSpecifi
             AND book.owner.id != :userId
             """)
     Page<Book> findAllDisplayableBooks(Pageable pageable, Integer userId);
+
+    Long countByArchivedAndShareableAndOwner_Id(
+            boolean archived,
+            boolean shareable,
+            Integer userId
+    );
 }

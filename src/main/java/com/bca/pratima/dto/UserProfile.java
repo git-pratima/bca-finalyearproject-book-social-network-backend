@@ -22,9 +22,9 @@ public class UserProfile {
 
     private LocalDateTime memberSince;
 
-    private Integer numberOfBooksShared;
+    private Long numberOfBooksShared;
 
-    private Integer numberOfBooksBorrowed;
+    private Long numberOfBooksBorrowed;
 
     @Builder.Default
     private AddressDto address = new AddressDto();
