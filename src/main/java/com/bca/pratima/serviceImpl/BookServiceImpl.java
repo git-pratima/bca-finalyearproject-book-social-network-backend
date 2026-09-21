@@ -315,11 +315,44 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public PageResponse<BookBorrowResponseDto> findSubmittedUserBookBorrowRequest(int page, int size, Authentication connectedUser) {
-        User user = ((User) connectedUser.getPrincipal());
-        Pageable pageable = PageRequest.of(page, size, Sort.by("requestDate").descending());
-        Page<BookBorrowRequest> submittedUserBookBorrowRequest = bookBorrowRepository.findSubmittedUserBookBorrowRequest(pageable, user.getId(), BookBorrowStatus.SUBMITTED);
-        List<BookBorrowResponseDto> booksResponse = bookMapper.toBookBorrowResponseDto(submittedUserBookBorrowRequest.getContent());
+    public PageResponse<BookBorrowResponseDto> findSubmittedUserBookBorrowRequest(
+            int page,
+            int size,
+            Authentication connectedUser,
+            BookBorrowStatus status,
+            String searchParameter,
+            String searchKeyword
+    ) {
+
+        User user = (User) connectedUser.getPrincipal();
+
+        Pageable pageable = PageRequest.of(
+                page,
+                size,
+                Sort.by("requestDate").descending()
+        );
+
+        if (searchParameter != null && searchParameter.isBlank()) {
+            searchParameter = null;
+        }
+
+        if (searchKeyword != null && searchKeyword.isBlank()) {
+            searchKeyword = null;
+        }
+
+        Page<BookBorrowRequest> submittedUserBookBorrowRequest =
+                bookBorrowRepository.findSubmittedUserBookBorrowRequest(
+                        pageable,
+                        user.getId(),
+                        status,
+                        searchParameter,
+                        searchKeyword
+                );
+
+        List<BookBorrowResponseDto> booksResponse =
+                bookMapper.toBookBorrowResponseDto(
+                        submittedUserBookBorrowRequest.getContent()
+                );
 
         return new PageResponse<>(
                 booksResponse,

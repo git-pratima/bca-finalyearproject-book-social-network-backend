@@ -49,7 +49,7 @@ public interface BookService {
     //
     BookBorrowResponseDto createBorrowRequest(@Valid BookBorrowRequestDto request, Authentication connectedUser);
 
-    PageResponse<BookBorrowResponseDto> findSubmittedUserBookBorrowRequest(int page, int size, Authentication connectedUser);
+    PageResponse<BookBorrowResponseDto> findSubmittedUserBookBorrowRequest(int page, int size, Authentication connectedUser,BookBorrowStatus status,String searchParameter,String searchKeyword);
 
     PageResponse<BookBorrowResponseDto> findBorrowedBooks(int page, int size, Authentication connectedUser,BookBorrowStatus status,String searchParameter,String searchKeyword);
 

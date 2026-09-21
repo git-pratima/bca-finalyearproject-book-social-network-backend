@@ -39,10 +39,13 @@ public class BookController {
     public ResponseEntity<Response> findSubmittedUserBookBorrowRequest(
             @RequestParam(name = "page", defaultValue = "0", required = false) int page,
             @RequestParam(name = "size", defaultValue = "5", required = false) int size,
+            @RequestParam(name = "status", required = false) BookBorrowStatus bookBorrowStatus,
+            @RequestParam(name = "searchParameter", required = false) String searchParameter,
+            @RequestParam(name = "searchKeyword", required = false) String searchKeyword,
             Authentication connectedUser
     ) {
 
-        PageResponse<BookBorrowResponseDto> userBookBorrowRequest =  bookService.findSubmittedUserBookBorrowRequest(page, size, connectedUser);
+        PageResponse<BookBorrowResponseDto> userBookBorrowRequest =  bookService.findSubmittedUserBookBorrowRequest(page, size, connectedUser, bookBorrowStatus,searchParameter, searchKeyword);
         Status status = new Status();
         status.setStatus(HttpStatus.OK.value());
         status.setMessage("Submitted User Book Borrow Request.");
@@ -64,9 +67,7 @@ public class BookController {
             Authentication connectedUser
     ) {
 
-        PageResponse<BookBorrowResponseDto> userBookBorrowRequest =  bookService.findBorrowedBooks(page, size, connectedUser, bookBorrowStatus,
-                searchParameter,
-                searchKeyword);
+        PageResponse<BookBorrowResponseDto> userBookBorrowRequest =  bookService.findBorrowedBooks(page, size, connectedUser, bookBorrowStatus,searchParameter, searchKeyword);
         Status status = new Status();
         status.setStatus(HttpStatus.OK.value());
         status.setMessage("Submitted User Book Borrow Request.");
