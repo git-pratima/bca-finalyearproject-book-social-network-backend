@@ -65,6 +65,36 @@ public interface BookRepository extends JpaRepository<Book, Integer>, JpaSpecifi
             @Param("searchKeyword") String searchKeyword
     );
 
+
+
+    @Query("""
+    SELECT b
+    FROM Book b
+    WHERE b.owner.id = :ownerId
+      AND (
+            :searchKeyword IS NULL
+            OR :searchKeyword = ''
+            OR (
+                :searchParameter = 'title'
+                AND LOWER(b.title) LIKE LOWER(CONCAT('%', :searchKeyword, '%'))
+            )
+            OR (
+                :searchParameter = 'authorName'
+                AND LOWER(b.authorName) LIKE LOWER(CONCAT('%', :searchKeyword, '%'))
+            )
+            OR (
+                :searchParameter = 'isbn'
+                AND LOWER(b.isbn) LIKE LOWER(CONCAT('%', :searchKeyword, '%'))
+            )
+      )
+""")
+    Page<Book> findAllBooksByOwner(
+            Pageable pageable,
+            @Param("ownerId") Integer ownerId,
+            @Param("searchParameter") String searchParameter,
+            @Param("searchKeyword") String searchKeyword
+    );
+
     Long countByArchivedAndShareableAndOwner_Id(
             boolean archived,
             boolean shareable,

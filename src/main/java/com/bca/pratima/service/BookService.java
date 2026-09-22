@@ -28,7 +28,7 @@ public interface BookService {
 
     public PageResponse<BookResponse> findAllBooks(int page, int size, Authentication connectedUser,String searchParameter,String city,String state,String postalCode,String searchKeyword);
 
-    public PageResponse<BookResponse> findAllBooksByOwner(int page, int size, Authentication connectedUser);
+    public PageResponse<BookResponse> findAllBooksByOwner(int page, int size, Authentication connectedUser, String searchParameter,String searchKeyword);
 
     public Integer updateShareableStatus(Integer bookId, Authentication connectedUser);
 

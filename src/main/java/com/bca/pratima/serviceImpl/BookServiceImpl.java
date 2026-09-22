@@ -173,13 +173,40 @@ public class BookServiceImpl implements BookService {
         );
     }
     @Override
-    public PageResponse<BookResponse> findAllBooksByOwner(int page, int size, Authentication connectedUser) {
-        User user = ((User) connectedUser.getPrincipal());
-        Pageable pageable = PageRequest.of(page, size, Sort.by("createdDate").descending());
-        Page<Book> books = bookRepository.findAll(withOwnerId(user.getId()), pageable);
+    public PageResponse<BookResponse> findAllBooksByOwner(
+            int page,
+            int size,
+            Authentication connectedUser,
+            String searchParameter,
+            String searchKeyword
+    ) {
+        User user = (User) connectedUser.getPrincipal();
+
+        Pageable pageable = PageRequest.of(
+                page,
+                size,
+                Sort.by("createdDate").descending()
+        );
+
+        if (searchParameter != null && searchParameter.isBlank()) {
+            searchParameter = null;
+        }
+
+        if (searchKeyword != null && searchKeyword.isBlank()) {
+            searchKeyword = null;
+        }
+
+        Page<Book> books = bookRepository.findAllBooksByOwner(
+                pageable,
+                user.getId(),
+                searchParameter,
+                searchKeyword
+        );
+
         List<BookResponse> booksResponse = books.stream()
                 .map(bookMapper::toBookResponse)
                 .toList();
+
         return new PageResponse<>(
                 booksResponse,
                 books.getNumber(),
