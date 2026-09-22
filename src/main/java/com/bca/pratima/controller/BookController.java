@@ -117,7 +117,8 @@ public class BookController {
             @RequestParam(name = "size", defaultValue = "10", required = false) int size,
             Authentication connectedUser
     ) {
-        return ResponseEntity.ok(bookService.findAllReturnedBooks(page, size, connectedUser));
+        //return ResponseEntity.ok(bookService.findAllReturnedBooks(page, size, connectedUser));
+        return null;
     }
 
     @PatchMapping("/shareable/{book-id}")
@@ -142,7 +143,8 @@ public class BookController {
             Authentication connectedUser
     ) {
         //TODO
-        return ResponseEntity.ok(bookService.borrowBook(bookId, connectedUser));
+       // return ResponseEntity.ok(bookService.borrowBook(bookId, connectedUser));
+        return null;
     }
 
     @PostMapping("/borrow-book")
@@ -168,7 +170,8 @@ public class BookController {
             Authentication connectedUser
     ) {
         //TODO
-        return ResponseEntity.ok(bookService.returnBorrowedBook(bookId, connectedUser));
+        //return ResponseEntity.ok(bookService.returnBorrowedBook(bookId, connectedUser));
+        return null;
     }
 
     @PatchMapping("borrow/return/approve/{book-id}")
@@ -177,7 +180,8 @@ public class BookController {
             Authentication connectedUser
     ) {
         //TODO
-        return ResponseEntity.ok(bookService.approveReturnBorrowedBook(bookId, connectedUser));
+        //return ResponseEntity.ok(bookService.approveReturnBorrowedBook(bookId, connectedUser));
+        return null;
     }
 
     @PostMapping(value = "/cover/{book-id}", consumes = "multipart/form-data")

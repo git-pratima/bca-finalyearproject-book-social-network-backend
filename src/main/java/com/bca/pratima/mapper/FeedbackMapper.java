@@ -12,7 +12,7 @@ import java.util.Objects;
 public class FeedbackMapper {
     public Feedback toFeedback(FeedbackRequest request) {
         return Feedback.builder()
-                .note(request.note())
+                //.note(request.note())
                 .comment(request.comment())
                 .book(Book.builder()
                         .id(request.bookId())
@@ -25,7 +25,7 @@ public class FeedbackMapper {
 
     public FeedbackResponse toFeedbackResponse(Feedback feedback, Integer id) {
         return FeedbackResponse.builder()
-                .note(feedback.getNote())
+                //.note(feedback.getNote())
                 .comment(feedback.getComment())
                 .ownFeedback(Objects.equals(feedback.getCreatedBy(), id))
                 .build();

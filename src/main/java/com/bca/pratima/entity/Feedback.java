@@ -26,7 +26,7 @@ public class Feedback{
     private Integer id;
 
     @Column
-    private Double note;
+    private Double rating;
 
     private String comment;
 

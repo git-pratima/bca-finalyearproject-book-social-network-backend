@@ -58,7 +58,6 @@ public class BookMapper {
                 .authorName(book.getAuthorName())
                 .isbn(book.getIsbn())
                 .synopsis(book.getSynopsis())
-                .rate(book.getRate())
                 .archived(book.isArchived())
                 .shareable(book.isShareable())
                 .owner(book.getOwner().fullName())
@@ -68,18 +67,6 @@ public class BookMapper {
                 // Cloudinary stores a remote delivery URL, not a local file path.
                 // Returning it as-is also keeps books without covers null-safe.
                 .cover(book.getBookCover())
-                .build();
-    }
-
-    public BorrowedBookResponse toBorrowedBookResponse(BookTransactionHistory history) {
-        return BorrowedBookResponse.builder()
-                .id(history.getBook().getId())
-                .title(history.getBook().getTitle())
-                .authorName(history.getBook().getAuthorName())
-                .isbn(history.getBook().getIsbn())
-                .rate(history.getBook().getRate())
-                .returned(history.isReturned())
-                .returnApproved(history.isReturnApproved())
                 .build();
     }
 

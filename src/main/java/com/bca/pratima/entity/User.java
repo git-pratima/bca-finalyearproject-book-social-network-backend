@@ -71,9 +71,6 @@ public class User implements UserDetails, Principal {
     @OneToMany(mappedBy = "bookOwner")
     private List<BookBorrowRequest> bookOwnerBorrowRequests;
 
-    @OneToMany(mappedBy = "user")
-    private List<BookTransactionHistory> histories;
-
     @CreatedDate
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdDate;

@@ -34,17 +34,7 @@ public interface BookService {
 
     public Integer updateArchivedStatus(Integer bookId, Authentication connectedUser);
 
-    public Integer borrowBook(Integer bookId, Authentication connectedUser);
-
-    public Integer returnBorrowedBook(Integer bookId, Authentication connectedUser);
-
-    public Integer approveReturnBorrowedBook(Integer bookId, Authentication connectedUser);
-
     public void uploadBookCoverPicture(MultipartFile file, Authentication connectedUser, Integer bookId);
-
-    public PageResponse<BorrowedBookResponse> findAllBorrowedBooks(int page, int size, Authentication connectedUser);
-
-    public PageResponse<BorrowedBookResponse> findAllReturnedBooks(int page, int size, Authentication connectedUser);
 
     //
     BookBorrowResponseDto createBorrowRequest(@Valid BookBorrowRequestDto request, Authentication connectedUser);
