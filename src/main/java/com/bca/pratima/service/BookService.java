@@ -26,7 +26,7 @@ public interface BookService {
 
     public BookResponse findById(Integer bookId);
 
-    public PageResponse<BookResponse> findAllBooks(int page, int size, Authentication connectedUser);
+    public PageResponse<BookResponse> findAllBooks(int page, int size, Authentication connectedUser,String searchParameter,String city,String state,String postalCode,String searchKeyword);
 
     public PageResponse<BookResponse> findAllBooksByOwner(int page, int size, Authentication connectedUser);
 

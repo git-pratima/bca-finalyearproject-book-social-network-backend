@@ -108,13 +108,60 @@ public class BookServiceImpl implements BookService {
                 .orElseThrow(() -> new EntityNotFoundException("No book found with ID:: " + bookId));
     }
     @Override
-    public PageResponse<BookResponse> findAllBooks(int page, int size, Authentication connectedUser) {
-        User user = ((User) connectedUser.getPrincipal());
-        Pageable pageable = PageRequest.of(page, size, Sort.by("createdDate").descending());
-        Page<Book> books = bookRepository.findAllDisplayableBooks(pageable, user.getId());
+    public PageResponse<BookResponse> findAllBooks(
+            int page,
+            int size,
+            Authentication connectedUser,
+            String searchParameter,
+            String city,
+            String state,
+            String postalCode,
+            String searchKeyword
+    ) {
+
+        User user = (User) connectedUser.getPrincipal();
+
+        Pageable pageable = PageRequest.of(
+                page,
+                size,
+                Sort.by("createdDate").descending()
+        );
+
+        // Handle empty values
+        if (searchParameter != null && searchParameter.isBlank()) {
+            searchParameter = null;
+        }
+
+        if (city != null && city.isBlank()) {
+            city = null;
+        }
+
+        if (state != null && state.isBlank()) {
+            state = null;
+        }
+
+        if (postalCode != null && postalCode.isBlank()) {
+            postalCode = null;
+        }
+
+        if (searchKeyword != null && searchKeyword.isBlank()) {
+            searchKeyword = null;
+        }
+
+        Page<Book> books = bookRepository.findAllDisplayableBooks(
+                pageable,
+                user.getId(),
+                searchParameter,
+                city,
+                state,
+                postalCode,
+                searchKeyword
+        );
+
         List<BookResponse> booksResponse = books.stream()
                 .map(bookMapper::toBookResponse)
                 .toList();
+
         return new PageResponse<>(
                 booksResponse,
                 books.getNumber(),
