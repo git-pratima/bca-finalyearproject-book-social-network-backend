@@ -72,6 +72,7 @@ public class BookServiceImpl implements BookService {
             book.setShareable(request.isShareable());
             book.setPickUpLocation(request.getPickUpLocation());
             book.setPickupInstructions(request.getPickupInstructions());
+            book.setArchived(request.isArchive());
         } else {
             book = bookMapper.toBook(request);
             book.setOwner(user);
