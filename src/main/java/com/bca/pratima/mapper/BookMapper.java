@@ -35,7 +35,7 @@ public class BookMapper {
                 .isbn(request.getIsbn())
                 .authorName(request.getAuthorName())
                 .synopsis(request.getSynopsis())
-                .archived(false)
+                .archived(request.isArchive())
                 .shareable(request.isShareable())
                 .pickUpLocation(request.getPickUpLocation())
                 .pickupInstructions(request.getPickupInstructions())

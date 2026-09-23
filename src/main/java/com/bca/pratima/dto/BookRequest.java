@@ -30,6 +30,8 @@ public class BookRequest {
 
     private boolean shareable;
 
+    private boolean archive;
+
     private AddressDto bookAddress;
 
     @NotNull(message = "104")
