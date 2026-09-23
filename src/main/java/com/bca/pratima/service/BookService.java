@@ -46,4 +46,6 @@ public interface BookService {
     Long countSharedBookByUser(boolean archived,boolean shareable,User connectedUser);
 
     Long countBorrowedBooksByUser(User connectedUser, BookBorrowStatus status);
+
+    String updateBorrowRequestStatus(@Valid UpdateBookBorrowRequest request, Authentication connectedUser);
 }

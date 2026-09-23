@@ -121,32 +121,6 @@ public class BookController {
         return null;
     }
 
-    @PatchMapping("/shareable/{book-id}")
-    public ResponseEntity<Integer> updateShareableStatus(
-            @PathVariable("book-id") Integer bookId,
-            Authentication connectedUser
-    ) {
-        return ResponseEntity.ok(bookService.updateShareableStatus(bookId, connectedUser));
-    }
-
-    @PatchMapping("/archived/{book-id}")
-    public ResponseEntity<Integer> updateArchivedStatus(
-            @PathVariable("book-id") Integer bookId,
-            Authentication connectedUser
-    ) {
-        return ResponseEntity.ok(bookService.updateArchivedStatus(bookId, connectedUser));
-    }
-
-    @PostMapping("borrow/{book-id}")
-    public ResponseEntity<Integer> borrowBook(
-            @PathVariable("book-id") Integer bookId,
-            Authentication connectedUser
-    ) {
-        //TODO
-       // return ResponseEntity.ok(bookService.borrowBook(bookId, connectedUser));
-        return null;
-    }
-
     @PostMapping("/borrow-book")
     public ResponseEntity<Response> createBorrowRequest(
             @Valid @RequestBody BookBorrowRequestDto request,
@@ -160,6 +134,23 @@ public class BookController {
         Response response = new Response();
         response.setStatus(status);
         response.setData(book);
+
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+    @PostMapping("/update-borrow-request")
+    public ResponseEntity<Response> updateBorrowRequestStatus(
+            @Valid @RequestBody UpdateBookBorrowRequest request,
+            Authentication connectedUser
+    ) {
+        String message = bookService.updateBorrowRequestStatus(request,connectedUser);
+        Status status = new Status();
+        status.setStatus(HttpStatus.OK.value());
+        status.setMessage("Borrow Request updated sucessfully.");
+
+        Response response = new Response();
+        response.setStatus(status);
+        response.setData(message);
 
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }

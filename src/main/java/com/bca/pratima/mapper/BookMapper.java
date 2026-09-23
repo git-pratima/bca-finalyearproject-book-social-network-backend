@@ -4,6 +4,7 @@ import com.bca.pratima.appenum.BookBorrowStatus;
 import com.bca.pratima.dto.*;
 import com.bca.pratima.entity.*;
 import com.bca.pratima.repository.UserRepository;
+import com.bca.pratima.utils.UserUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -23,6 +24,9 @@ public class BookMapper {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private UserUtils userUtils;
 
     public Book toBook(BookRequest request) {
         return Book.builder()
@@ -132,6 +136,8 @@ public class BookMapper {
                     .agreeToFollowPickupInstruction(bookBorrowRequest.getAgreeToFollowPickupInstruction())
                     .finalReturnDate(bookBorrowRequest.getFinalReturnDate())
                     .status(bookBorrowRequest.getStatus())
+                    .borrowerName(userUtils.getUserNameByUserId(bookBorrowRequest.getBorrower().getId()))
+                    .ownerName(userUtils.getUserNameByUserId(bookBorrowRequest.getBookOwner().getId()))
                     .build();
 
             list.add(bookBorrowResponseDto);

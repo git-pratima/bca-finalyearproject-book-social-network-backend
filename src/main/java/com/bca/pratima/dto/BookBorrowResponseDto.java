@@ -23,6 +23,10 @@ public class BookBorrowResponseDto {
 
     private String bookCover;
 
+    private String borrowerName;
+
+    private String ownerName;
+
     private String author;
 
     @Enumerated(EnumType.STRING)

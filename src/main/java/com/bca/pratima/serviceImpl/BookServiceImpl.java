@@ -14,6 +14,7 @@ import com.bca.pratima.service.FileStorageService;
 import com.bca.pratima.utils.CloudinaryImageUtils;
 import com.bca.pratima.utils.UserUtils;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -401,6 +402,32 @@ public class BookServiceImpl implements BookService {
     @Override
     public Long countBorrowedBooksByUser(User user, BookBorrowStatus status) {
         return bookBorrowRepository.countBorrowedBooksByUser(user.getId(), status);
+    }
+
+    @Override
+    @Transactional
+    public String updateBorrowRequestStatus(UpdateBookBorrowRequest request, Authentication connectedUser) {
+        Book book = bookRepository.findById(request.getBookId())
+                .orElseThrow(() ->
+                        new EntityNotFoundException(
+                                "No book found with ID:: " + request.getBookId()
+                        )
+                );
+
+        BookBorrowRequest bookBorrowRequest = bookBorrowRepository.findById(request.getBorrowRequestId()).orElseThrow(() ->
+                new EntityNotFoundException(
+                        "No book Request found with ID:: " + request.getBorrowRequestId()
+                )
+        );
+
+        book.setArchived(request.isArchived());
+        book.setShareable(request.isShareable());
+        Book updatedBook = bookRepository.save(book);
+        bookBorrowRequest.setStatus(request.getStatus());
+        bookBorrowRepository.save(bookBorrowRequest);
+
+
+        return "Updated Successfully";
     }
 
 
