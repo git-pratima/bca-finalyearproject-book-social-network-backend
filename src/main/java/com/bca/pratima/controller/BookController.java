@@ -86,6 +86,7 @@ public class BookController {
         return ResponseEntity.ok(bookService.findById(bookId));
     }
 
+    //Home tab
     @GetMapping
     public ResponseEntity<PageResponse<BookResponse>> findAllBooks(
             @RequestParam(name = "page", defaultValue = "0", required = false) int page,
