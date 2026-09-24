@@ -420,7 +420,6 @@ public class BookServiceImpl implements BookService {
                         "No book Request found with ID:: " + request.getBorrowRequestId()
                 )
         );
-
         book.setArchived(request.isArchived());
         book.setShareable(request.isShareable());
         Book updatedBook = bookRepository.save(book);
