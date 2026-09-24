@@ -376,6 +376,50 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
+    public PageResponse<BookBorrowResponseDto> findUserReturnedBooks(int page, int size, Authentication connectedUser, BookBorrowStatus bookBorrowStatus, String searchParameter, String searchKeyword) {
+        User user = (User) connectedUser.getPrincipal();
+
+        Pageable pageable = PageRequest.of(
+                page,
+                size,
+                Sort.by("requestDate").descending()
+        );
+
+        // Handle empty strings
+        if (searchParameter != null && searchParameter.isBlank()) {
+            searchParameter = null;
+        }
+
+        if (searchKeyword != null && searchKeyword.isBlank()) {
+            searchKeyword = null;
+        }
+
+        Page<BookBorrowRequest> submittedUserBookBorrowRequest =
+                bookBorrowRepository.findUserReturnedBooks(
+                        pageable,
+                        user.getId(),
+                        bookBorrowStatus,
+                        searchParameter,
+                        searchKeyword
+                );
+
+        List<BookBorrowResponseDto> booksResponse =
+                bookMapper.toBookBorrowResponseDto(
+                        submittedUserBookBorrowRequest.getContent()
+                );
+
+        return new PageResponse<>(
+                booksResponse,
+                submittedUserBookBorrowRequest.getNumber(),
+                submittedUserBookBorrowRequest.getSize(),
+                submittedUserBookBorrowRequest.getTotalElements(),
+                submittedUserBookBorrowRequest.getTotalPages(),
+                submittedUserBookBorrowRequest.isFirst(),
+                submittedUserBookBorrowRequest.isLast()
+        );
+    }
+
+    @Override
     public BookBorrowResponseDto createBorrowRequest(BookBorrowRequestDto request, Authentication connectedUser) {
 
         Book book = bookRepository.findById(request.getBookId())
@@ -429,6 +473,5 @@ public class BookServiceImpl implements BookService {
 
         return "Updated Successfully";
     }
-
 
 }

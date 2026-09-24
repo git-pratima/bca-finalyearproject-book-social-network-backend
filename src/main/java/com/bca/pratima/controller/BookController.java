@@ -79,6 +79,27 @@ public class BookController {
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
+    @GetMapping("/returnbooks")
+    public ResponseEntity<Response> findUserReturnedBooks(
+            @RequestParam(name = "page", defaultValue = "0", required = false) int page,
+            @RequestParam(name = "size", defaultValue = "10", required = false) int size,
+            @RequestParam(name = "status", required = false) BookBorrowStatus bookBorrowStatus,
+            @RequestParam(name = "searchParameter", required = false) String searchParameter,
+            @RequestParam(name = "searchKeyword", required = false) String searchKeyword,
+            Authentication connectedUser
+    ) {
+        PageResponse<BookBorrowResponseDto> userBookBorrowRequest =  bookService.findUserReturnedBooks(page, size, connectedUser, bookBorrowStatus,searchParameter, searchKeyword);
+        Status status = new Status();
+        status.setStatus(HttpStatus.OK.value());
+        status.setMessage("Returned Books.");
+
+        Response response = new Response();
+        response.setStatus(status);
+        response.setData(userBookBorrowRequest);
+
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
     @GetMapping("/{book-id}")
     public ResponseEntity<BookResponse> findBookById(
             @PathVariable("book-id") Integer bookId
@@ -110,16 +131,6 @@ public class BookController {
             Authentication connectedUser
     ) {
         return ResponseEntity.ok(bookService.findAllBooksByOwner(page, size, connectedUser,searchParameter,searchKeyword));
-    }
-
-    @GetMapping("/returned")
-    public ResponseEntity<PageResponse<BorrowedBookResponse>> findAllReturnedBooks(
-            @RequestParam(name = "page", defaultValue = "0", required = false) int page,
-            @RequestParam(name = "size", defaultValue = "10", required = false) int size,
-            Authentication connectedUser
-    ) {
-        //return ResponseEntity.ok(bookService.findAllReturnedBooks(page, size, connectedUser));
-        return null;
     }
 
     @PostMapping("/borrow-book")
@@ -154,28 +165,6 @@ public class BookController {
         response.setData(message);
 
         return ResponseEntity.status(HttpStatus.OK).body(response);
-    }
-
-
-
-    @PatchMapping("borrow/return/{book-id}")
-    public ResponseEntity<Integer> returnBorrowBook(
-            @PathVariable("book-id") Integer bookId,
-            Authentication connectedUser
-    ) {
-        //TODO
-        //return ResponseEntity.ok(bookService.returnBorrowedBook(bookId, connectedUser));
-        return null;
-    }
-
-    @PatchMapping("borrow/return/approve/{book-id}")
-    public ResponseEntity<Integer> approveReturnBorrowBook(
-            @PathVariable("book-id") Integer bookId,
-            Authentication connectedUser
-    ) {
-        //TODO
-        //return ResponseEntity.ok(bookService.approveReturnBorrowedBook(bookId, connectedUser));
-        return null;
     }
 
     @PostMapping(value = "/cover/{book-id}", consumes = "multipart/form-data")

@@ -48,4 +48,6 @@ public interface BookService {
     Long countBorrowedBooksByUser(User connectedUser, BookBorrowStatus status);
 
     String updateBorrowRequestStatus(@Valid UpdateBookBorrowRequest request, Authentication connectedUser);
+
+    PageResponse<BookBorrowResponseDto> findUserReturnedBooks(int page, int size, Authentication connectedUser, BookBorrowStatus bookBorrowStatus, String searchParameter, String searchKeyword);
 }
