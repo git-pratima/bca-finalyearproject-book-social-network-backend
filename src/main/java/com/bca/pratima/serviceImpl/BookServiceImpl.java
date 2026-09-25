@@ -468,6 +468,7 @@ public class BookServiceImpl implements BookService {
         book.setShareable(request.isShareable());
         Book updatedBook = bookRepository.save(book);
         bookBorrowRequest.setStatus(request.getStatus());
+        bookBorrowRequest.setComment(request.getNewComment());
         bookBorrowRepository.save(bookBorrowRequest);
 
 

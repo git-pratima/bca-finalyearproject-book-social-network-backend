@@ -20,6 +20,8 @@ public class UpdateBookBorrowRequest {
 
     private boolean archived;
 
+    private String newComment;
+
     @Enumerated(EnumType.STRING)
     private BookBorrowStatus status;
 
