@@ -29,5 +29,6 @@ public class BookResponse {
     private String pickUpLocation;
     private String pickupInstructions;
     private double averageRating;
+    private Boolean watchlisted;
     private List<Feedback> feedbackList;
 }

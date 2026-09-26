@@ -4,6 +4,7 @@ import com.bca.pratima.appenum.BookBorrowStatus;
 import com.bca.pratima.dto.*;
 import com.bca.pratima.entity.*;
 import com.bca.pratima.repository.UserRepository;
+import com.bca.pratima.repository.WatchlistRepository;
 import com.bca.pratima.utils.UserUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +25,9 @@ public class BookMapper {
 
     @Autowired
     private UserUtils userUtils;
+
+    @Autowired
+    private WatchlistRepository watchlistRepository;
 
     public Book toBook(BookRequest request) {
         return Book.builder()
@@ -98,6 +102,7 @@ public class BookMapper {
                 .cover(book.getBookCover())
                 .feedbackList(feedbackList)
                 .averageRating(averageRating)
+                .watchlisted(watchlistRepository.checkIfBookIsWatchlisted(book.getId(),userUtils.getLoggedInUser().getId()))
                 .build();
     }
 
