@@ -1,6 +1,7 @@
 package com.bca.pratima.entity;
 
 import com.bca.pratima.dto.BaseEntity;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;

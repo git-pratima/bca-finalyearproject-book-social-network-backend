@@ -101,6 +101,52 @@ public class BookMapper {
                 .build();
     }
 
+    public BookResponse toBookResponseWithoutAddress(Book book) {
+        List<Feedback> feedbackList = null;
+        Double averageRating = 0.0;
+        if(book.getFeedbacks()!=null){
+            feedbackList = book.getFeedbacks();
+
+            feedbackList = book.getFeedbacks() == null
+                    ? List.of()
+                    : book.getFeedbacks().stream()
+                    .sorted(Comparator.comparing(
+                            Feedback::getId,
+                            Comparator.reverseOrder()
+                    ))
+                    .limit(5)
+                    .toList();
+
+
+            averageRating = feedbackList == null || feedbackList.isEmpty() || feedbackList.size()==0
+                    ? 0.0
+                    : Math.round(
+                    feedbackList.stream()
+                            .mapToDouble(Feedback::getRating)
+                            .average()
+                            .orElse(0.0) * 10
+            ) / 10.0;
+        }
+
+        return BookResponse.builder()
+                .id(book.getId())
+                .title(book.getTitle())
+                .authorName(book.getAuthorName())
+                .isbn(book.getIsbn())
+                .synopsis(book.getSynopsis())
+                .archived(book.isArchived())
+                .shareable(book.isShareable())
+                .owner(book.getOwner().fullName())
+                .pickupInstructions(book.getPickupInstructions())
+                .pickUpLocation(book.getPickUpLocation())
+                // Cloudinary stores a remote delivery URL, not a local file path.
+                // Returning it as-is also keeps books without covers null-safe.
+                .cover(book.getBookCover())
+                .feedbackList(feedbackList)
+                .averageRating(averageRating)
+                .build();
+    }
+
     public BookBorrowRequest toBookBorrowRequest(BookBorrowRequestDto request,Book book, Authentication connectedUser) {
         User borrower = (User) connectedUser.getPrincipal();
 

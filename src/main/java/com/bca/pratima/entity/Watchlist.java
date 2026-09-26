@@ -1,9 +1,7 @@
 package com.bca.pratima.entity;
 
-import com.bca.pratima.dto.BaseEntity;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,9 +12,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 @Getter
 @Setter
@@ -24,50 +19,23 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name="tbl_book")
-public class Book{
+@Table(name="tbl_book_watchlist")
+public class Watchlist {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    private String title;
+    @Column(name="bookid")
+    private Integer bookId;
 
-    private String authorName;
+    @Column(name="watchlisted")
+    private Boolean watchlisted;
 
-    private String isbn;
-
-    @Size(max = 2500, message = "Pickup instructions must not exceed 2500 characters")
-    @Column(length = 2500)
-    private String synopsis;
-
-    private String bookCover;
-
-    private boolean archived;
-
-    private boolean shareable;
-
-    @Size(max = 2500, message = "Pickup instructions must not exceed 2500 characters")
-    @Column(length = 2500)
-    private String pickupInstructions;
-
-    @Size(max = 2500, message = "Pickup instructions must not exceed 2500 characters")
-    @Column(length = 2500)
-    private String pickUpLocation;
-
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinColumn(name = "address_id")
-    private Address address;
-
-    @ManyToOne
-    @JoinColumn(name = "owner_id")
-    private User owner;
-
-    @OneToMany(mappedBy = "book")
-    private List<Feedback> feedbacks;
-
-    @OneToMany(mappedBy = "book")
-    private List<BookBorrowRequest> borrowRequests;
+    @JsonBackReference
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
     @Column(name="CREATED_DATE")
     @Temporal(TemporalType.TIMESTAMP)

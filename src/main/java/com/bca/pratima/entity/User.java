@@ -1,6 +1,7 @@
 package com.bca.pratima.entity;
 
 import com.bca.pratima.appenum.AuthProvider;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -15,7 +16,9 @@ import java.security.Principal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static jakarta.persistence.FetchType.EAGER;
@@ -67,6 +70,10 @@ public class User implements UserDetails, Principal {
 
     @OneToMany(mappedBy = "borrower")
     private List<BookBorrowRequest> borrowRequests;
+
+    @JsonManagedReference
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Watchlist> watchlistEntries = new HashSet<>();
 
     @OneToMany(mappedBy = "bookOwner")
     private List<BookBorrowRequest> bookOwnerBorrowRequests;
