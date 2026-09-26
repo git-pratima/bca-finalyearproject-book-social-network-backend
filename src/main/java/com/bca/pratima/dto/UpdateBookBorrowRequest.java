@@ -25,4 +25,6 @@ public class UpdateBookBorrowRequest {
     @Enumerated(EnumType.STRING)
     private BookBorrowStatus status;
 
+    private FeedbackRequest feedbackRequest;
+
 }

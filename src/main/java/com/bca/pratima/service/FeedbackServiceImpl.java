@@ -39,8 +39,8 @@ public class FeedbackServiceImpl implements FeedbackService {
 
     @Override
     public Integer save(FeedbackRequest request, Authentication connectedUser) {
-        Book book = bookRepository.findById(request.bookId())
-                .orElseThrow(() -> new EntityNotFoundException("No book found with ID:: " + request.bookId()));
+        Book book = bookRepository.findById(request.getBookId())
+                .orElseThrow(() -> new EntityNotFoundException("No book found with ID:: " + request.getBookId()));
         if (book.isArchived() || !book.isShareable()) {
             throw new OperationNotPermittedException("You cannot give a feedback for and archived or not shareable book");
         }

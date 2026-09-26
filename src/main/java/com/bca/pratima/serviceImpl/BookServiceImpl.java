@@ -7,8 +7,10 @@ import com.bca.pratima.exception.AccessDeniedException;
 import com.bca.pratima.exception.OperationNotPermittedException;
 import com.bca.pratima.mapper.AddressMapper;
 import com.bca.pratima.mapper.BookMapper;
+import com.bca.pratima.mapper.FeedbackMapper;
 import com.bca.pratima.repository.BookBorrowRepository;
 import com.bca.pratima.repository.BookRepository;
+import com.bca.pratima.repository.FeedBackRepository;
 import com.bca.pratima.service.BookService;
 import com.bca.pratima.service.FileStorageService;
 import com.bca.pratima.utils.CloudinaryImageUtils;
@@ -51,7 +53,13 @@ public class BookServiceImpl implements BookService {
     private BookBorrowRepository bookBorrowRepository;
 
     @Autowired
+    private FeedBackRepository feedbackRepository;
+
+    @Autowired
     private UserUtils userUtils;
+
+    @Autowired
+    private FeedbackMapper feebackMapper;
 
     @Override
     public Integer save(BookRequest request, Authentication connectedUser) {
@@ -464,12 +472,27 @@ public class BookServiceImpl implements BookService {
                         "No book Request found with ID:: " + request.getBorrowRequestId()
                 )
         );
+
         book.setArchived(request.isArchived());
         book.setShareable(request.isShareable());
-        Book updatedBook = bookRepository.save(book);
+
+        bookRepository.save(book);
+
         bookBorrowRequest.setStatus(request.getStatus());
         bookBorrowRequest.setComment(request.getNewComment());
+
         bookBorrowRepository.save(bookBorrowRequest);
+
+        if (request.getFeedbackRequest() != null) {
+
+            Feedback feedback = feebackMapper.toFeedback(
+                    request.getFeedbackRequest()
+            );
+
+            feedback.setBook(book);
+
+            feedbackRepository.save(feedback);
+        }
 
 
         return "Updated Successfully";

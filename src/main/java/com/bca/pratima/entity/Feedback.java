@@ -1,5 +1,6 @@
 package com.bca.pratima.entity;
 import com.bca.pratima.dto.BaseEntity;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -30,6 +31,7 @@ public class Feedback{
 
     private String comment;
 
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "book_id")
     private Book book;

@@ -1,8 +1,11 @@
 package com.bca.pratima.dto;
 
+import com.bca.pratima.entity.Feedback;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
+
+import java.util.List;
 
 @Getter
 @Setter
@@ -25,4 +28,6 @@ public class BookResponse {
     private AddressDto bookAddress;
     private String pickUpLocation;
     private String pickupInstructions;
+    private double averageRating;
+    private List<Feedback> feedbackList;
 }

@@ -10,10 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class BookMapper {
@@ -45,6 +42,8 @@ public class BookMapper {
     public BookResponse toBookResponse(Book book) {
         AddressDto addressDto = new AddressDto();
         Address dbAddress = null;
+
+
         if(book.getAddress()!=null){
             dbAddress = book.getAddress();
             addressDto.setId(dbAddress.getId());
@@ -56,6 +55,32 @@ public class BookMapper {
             addressDto.setLandmark(dbAddress.getLandmark());
             addressDto.setPin(dbAddress.getPostalCode());
         }
+        List<Feedback> feedbackList = null;
+        Double averageRating = 0.0;
+        if(book.getFeedbacks()!=null){
+            feedbackList = book.getFeedbacks();
+
+          feedbackList = book.getFeedbacks() == null
+                    ? List.of()
+                    : book.getFeedbacks().stream()
+                    .sorted(Comparator.comparing(
+                            Feedback::getId,
+                            Comparator.reverseOrder()
+                    ))
+                    .limit(5)
+                    .toList();
+
+
+            averageRating = feedbackList == null || feedbackList.isEmpty() || feedbackList.size()==0
+                    ? 0.0
+                    : Math.round(
+                    feedbackList.stream()
+                            .mapToDouble(Feedback::getRating)
+                            .average()
+                            .orElse(0.0) * 10
+            ) / 10.0;
+        }
+
         return BookResponse.builder()
                 .id(book.getId())
                 .title(book.getTitle())
@@ -71,6 +96,8 @@ public class BookMapper {
                 // Cloudinary stores a remote delivery URL, not a local file path.
                 // Returning it as-is also keeps books without covers null-safe.
                 .cover(book.getBookCover())
+                .feedbackList(feedbackList)
+                .averageRating(averageRating)
                 .build();
     }
 
